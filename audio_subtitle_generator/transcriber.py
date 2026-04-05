@@ -1,13 +1,26 @@
 from faster_whisper import WhisperModel
 import numpy as np
 
-model = WhisperModel(
-    "small",
-    device="auto",
-    compute_type="int8",
-    download_root="models",
-    local_files_only=True   # Keep False for first time to download the model, then set to True for loading it.
-)
+MODEL_SIZE = "small"  # You can choose "tiny", "base", "small", "medium", or "large"
+MODEL_DIR = "models"  # Directory to store model files
+try:
+    # Try loading the model from local files first to avoid unnecessary downloads
+    model = WhisperModel(
+        MODEL_SIZE,
+        device="auto",
+        compute_type="int8",
+        download_root=MODEL_DIR,
+        local_files_only=True
+    )
+except Exception:
+    # If loading from local files fails, fall back to downloading the model
+    model = WhisperModel(
+        MODEL_SIZE,
+        device="auto",
+        compute_type="int8",
+        download_root=MODEL_DIR,
+        local_files_only=False
+    )
 
 def start_transcription(audio_queue, text_queue):
     buffer = np.array([], dtype=np.float32)
